@@ -2,31 +2,40 @@ package org.ababup1192.async;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
-    // TextViewの宣言
     private TextView textView;
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // TextViewのバインド。(layoutでTextViewにIDを持たせるのを忘れないように。)
         textView = (TextView) findViewById(R.id.text);
 
-        // 以下の処理では、TextViewの描画がされる前に、Sleep処理が動いてしまうせいで、同期処理となってしまう。
-        // 非同期処理に書き換えてみましょう。
-        try {
-            Thread.sleep(10000);
-            textView.setText("Finish!");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        handler = new Handler();
+
+        // 別スレッドで時間の掛かる計算をする。そして、その得られた結果をUIスレッドに反映する。
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // 時間が掛かる計算を書いてみましょう。
+
+                // Handlerを使い、得られた結果をUIスレッドへ反映する。
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // 計算結果をUIに反映させてみましょう。
+                        
+                    }
+                });
+            }
+        }).start();
 
     }
 

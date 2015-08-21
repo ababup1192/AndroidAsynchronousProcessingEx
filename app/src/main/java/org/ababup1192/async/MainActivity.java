@@ -1,44 +1,40 @@
 package org.ababup1192.async;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
+    private Button button;
     private TextView textView;
-    private Handler handler;
+    private Context context;
+    private Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        textView = (TextView) findViewById(R.id.text);
+        Button button = (Button) findViewById(R.id.button);
 
-        handler = new Handler() {
+        context = this;
+        activity = this;
+
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void handleMessage(Message msg) {
-                // Handlerを使い別スレッドからメッセージを受け取り、結果をUIスレッドへ反映する。
-                if (msg.what == 1) {
-                }
+            public void onClick(View view) {
+                // 非同期処理をインスタンス化し、処理を実行。
+                FactorialTask factorialTask = new FactorialTask(context, activity);
+                factorialTask.execute(10);
             }
-        };
-
-        // 別スレッドで時間の掛かる計算をする。そして、その得られた結果をHandlerへ送る。
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // 時間が掛かる計算を書きましょう。
-
-                // 計算結果をHandlerへメッセージとして送りましょう。
-                Message message = Message.obtain(handler, 1, "送りたいオブジェクト");
-                handler.sendMessage(message);
-            }
-        }).start();
+        });
 
     }
 

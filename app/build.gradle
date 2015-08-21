@@ -22,4 +22,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
+    // 以下のように追加
+    compile "com.android.support:support-v4:22.0.0"
 }

@@ -3,38 +3,22 @@ package org.ababup1192.async;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class MainActivity extends Activity {
-    private Button button;
+public class MainActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<Integer>, View.OnClickListener {
     private TextView textView;
-    private Context context;
-    private Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Button button = (Button) findViewById(R.id.button);
-
-        context = this;
-        activity = this;
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // 非同期処理をインスタンス化し、処理を実行。
-                FactorialTask factorialTask = new FactorialTask(context, activity);
-                factorialTask.execute(10);
-            }
-        });
 
     }
 
@@ -59,4 +43,35 @@ public class MainActivity extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.button) {
+            textView.setText("計算中です...");
+            // 以前のTaskを削除する。(何度でも計算できるようにするため)
+            getSupportLoaderManager().destroyLoader(0);
+            getSupportLoaderManager().initLoader(0, null, this);
+        }
+    }
+
+    @Override
+    public Loader<Integer> onCreateLoader(int i, Bundle bundle) {
+        // コンストラクタの拡張に併せて、自由に変更して良い。
+        Loader<Integer> loader = new FactorialTask(this);
+        loader.forceLoad();
+        return loader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Integer> loader, Integer result) {
+        // 結果を反映しましょう。
+        
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Integer> loader) {
+
+    }
+
 }

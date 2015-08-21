@@ -3,6 +3,7 @@ package org.ababup1192.async;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -18,22 +19,24 @@ public class MainActivity extends Activity {
 
         textView = (TextView) findViewById(R.id.text);
 
-        handler = new Handler();
+        handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                // Handlerを使い別スレッドからメッセージを受け取り、結果をUIスレッドへ反映する。
+                if (msg.what == 1) {
+                }
+            }
+        };
 
-        // 別スレッドで時間の掛かる計算をする。そして、その得られた結果をUIスレッドに反映する。
+        // 別スレッドで時間の掛かる計算をする。そして、その得られた結果をHandlerへ送る。
         new Thread(new Runnable() {
             @Override
             public void run() {
-                // 時間が掛かる計算を書いてみましょう。
+                // 時間が掛かる計算を書きましょう。
 
-                // Handlerを使い、得られた結果をUIスレッドへ反映する。
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        // 計算結果をUIに反映させてみましょう。
-                        
-                    }
-                });
+                // 計算結果をHandlerへメッセージとして送りましょう。
+                Message message = Message.obtain(handler, 1, "送りたいオブジェクト");
+                handler.sendMessage(message);
             }
         }).start();
 
